@@ -341,7 +341,9 @@ function drawCursor(x,y,dx,dy,on){
 /* ---------- interaction ---------- */
 let tool='rake',down=null,ptr={x:-99,y:-99,in:false,mouse:false},pen=null,dir={x:1,y:0},travel=0,lastAct=0,autoOn=false,entered=false;
 const ag={x:0,y:0,a:0,left:0,pause:30,t:0,s:Math.random()*99,dx:1,dy:0};
-const HINTS={rake:'Glissez pour ratisser le sable',stone:'Touchez pour poser une pierre, touchez-la pour la retirer',smooth:'Glissez pour effacer les traces',auto:'Le jardinier ratisse pour vous. Respirez.'};
+// à la souris on clique, au doigt on touche
+const FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+const HINTS={rake:'Glissez pour ratisser le sable',stone:FINE?'Cliquez pour poser une pierre, cliquez dessus pour la retirer':'Touchez pour poser une pierre, touchez-la pour la retirer',smooth:'Glissez pour effacer les traces',auto:'Le jardinier ratisse pour vous. Respirez.'};
 const setHint=()=>$('hint').textContent=autoOn?HINTS.auto:HINTS[tool];
 function setTool(t){tool=t;document.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t));setHint()}
 function applyTool(ax,ay,bx,by,speed){
