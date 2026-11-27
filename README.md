@@ -26,9 +26,16 @@ Le jeu est découpé en modules JavaScript, que les navigateurs refusent d'ouvri
 
 - `index.html` et `style.css` ; le code est dans `src/`, en modules ES sans étape de construction.
 - `src/garden.js` : le jardin sans DOM (champ de hauteur du sable, râteau, pierres et cercles, annulation, nouveau jardin, jardinier automatique). Testable sous Node.
-- `src/render.js` (sable ombré, pierres, particules, lumière), `src/audio.js` (musique créée en direct), `src/ui.js` (outils, gestes, boucle), `src/config.js` (constantes, lumières, version).
+- `src/render.js` (sable ombré, pierres, particules, lumière), `src/audio.js` (musique créée en direct), `src/ui.js` (outils, gestes, boucle), `src/config.js` (constantes, lumières, version), `src/art.js` (visuels peints).
 - Typage : `// @ts-check` et JSDoc, vérifiés par `npm run types` (TypeScript en mode strict).
 - `?graine=N` dans l'adresse rend le jardin rejouable à l'identique.
+
+## Visuels
+
+Les 6 visuels du dossier `art/` ont été peints avec Codex (prompts dans `tools/art/prompts.json`) :
+le jardin à l'aube sous l'accueil, une tuile de sable sans couture (le grain posé sur le relief ratissé)
+et les textures des 4 pierres (granit, basalte, grès, schiste). Le modelé, l'ombre, la mousse et
+la teinte de l'ambiance restent calculés. Si une image manque, le jardin reste entièrement dessiné.
 
 ## Sauvegarde
 

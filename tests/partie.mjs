@@ -65,6 +65,9 @@ try {
 
   await page.goto(URL);
   check(/^v\d+\.\d+\.\d+$/.test(await page.locator('#ver').innerText()), 'numéro de version sur l\'accueil');
+  await page.waitForFunction(() => __kz.art !== undefined, null, { timeout: 10000 });
+  check(await page.evaluate(() => __kz.art) === 6, 'les 6 visuels peints sont chargés (titre, sable, 4 pierres)');
+  check((await page.locator('#intro').evaluate(e => getComputedStyle(e).backgroundImage)).includes('titre.webp'), 'tableau peint sous l\'accueil');
   const n0 = await stones(page);
   check([3, 5, 7].some(n => n0 >= 2 && n0 <= n), `jardin composé (${n0} pierres)`);
   await snap(page); await sleep(2500);

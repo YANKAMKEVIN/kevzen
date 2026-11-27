@@ -3,6 +3,7 @@
 import { TAU, C, SP, MOODS, KINDS, clamp, rng } from './config.js';
 import { G, allocate, stoneAt } from './garden.js';
 import { save } from './save.js';
+import { art } from './art.js';
 
 export const cv = /** @type {HTMLCanvasElement} */ (document.getElementById('g'));
 export const ctx = /** @type {CanvasRenderingContext2D} */ (cv.getContext('2d'));
@@ -48,9 +49,14 @@ export function renderStone(s) {
   g.save(); g.shadowColor = 'rgba(25,12,0,.55)'; g.shadowBlur = s.r * .55 * dpr; g.shadowOffsetX = s.r * .22 * dpr; g.shadowOffsetY = s.r * .3 * dpr; g.fillStyle = k[0]; g.fill(p); g.restore();
   g.save(); g.clip(p);
   const gr = g.createRadialGradient(-s.r * .4, -s.r * .45, s.r * .05, 0, 0, R * 1.05); gr.addColorStop(0, k[1]); gr.addColorStop(.5, k[0]); gr.addColorStop(1, k[2]);
-  g.fillStyle = gr; g.fillRect(-half, -half, half * 2, half * 2);
-  const r = rng(s.seed);
-  for (let i = 0; i < s.r * 9; i++) { const a = r() * TAU, d = Math.sqrt(r()) * R; g.fillStyle = r() < .5 ? 'rgba(255,255,255,.13)' : 'rgba(0,0,0,.16)'; g.beginPath(); g.arc(Math.cos(a) * d, Math.sin(a) * d, r() * 1.3 + .3, 0, TAU); g.fill(); }
+  const r = rng(s.seed), tex = art('pierre_' + (s.kind + 1));
+  if (tex) {
+    // pierre peinte : sa texture, tournée au hasard, puis le modelé (lumière en haut à gauche) par-dessus
+    g.save(); g.rotate(r() * TAU); g.drawImage(tex, -R * 1.1, -R * 1.1, R * 2.2, R * 2.2); g.restore();
+    g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(-half, -half, half * 2, half * 2);
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  } else { g.fillStyle = gr; g.fillRect(-half, -half, half * 2, half * 2); }
+  if (!tex) for (let i = 0; i < s.r * 9; i++) { const a = r() * TAU, d = Math.sqrt(r()) * R; g.fillStyle = r() < .5 ? 'rgba(255,255,255,.13)' : 'rgba(0,0,0,.16)'; g.beginPath(); g.arc(Math.cos(a) * d, Math.sin(a) * d, r() * 1.3 + .3, 0, TAU); g.fill(); }
   for (let i = 0; i < 3; i++) { g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = .8; g.beginPath(); const a = r() * TAU; g.moveTo(Math.cos(a) * R, Math.sin(a) * R); g.quadraticCurveTo(r() * s.r - s.r / 2, r() * s.r - s.r / 2, -Math.cos(a) * R, -Math.sin(a) * R); g.stroke(); }
   if (s.moss) {
     for (let i = 0; i < 7; i++) {
@@ -142,6 +148,18 @@ function drawCursor(x, y, dx, dy, tool) {
   ctx.restore();
 }
 
+/** @type {CanvasPattern|null} */ let sandPat = null;
+/** Motif du sable peint (tuile de 512 px), une fois l'image chargée. */
+function sandPattern() {
+  if (sandPat) return sandPat;
+  const im = art('sable'); if (!im) return null;
+  sandPat = ctx.createPattern(im, 'repeat');
+  if (sandPat) sandPat.setTransform(new DOMMatrix().scale(.5));
+  return sandPat;
+}
+/** Les visuels viennent d'arriver : on repeint les pierres déjà posées. */
+export function artReady() { for (const s of G.stones) s.cv = undefined; }
+
 /** Dessine une image complète. @param {number} t @param {{x:number,y:number,dx:number,dy:number,tool:string}|null} cursor */
 export function draw(t, cursor) {
   const d = G.dirty;
@@ -149,6 +167,12 @@ export function draw(t, cursor) {
   const dpr = view.dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(sand, 0, 0, G.W * C, G.H * C);
+  const grainPat = sandPattern();
+  if (grainPat) {
+    // grain du sable peint, en surimpression douce sur le relief ombré
+    ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = .55; ctx.fillStyle = grainPat; ctx.fillRect(0, 0, G.W * C, G.H * C);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
   for (const s of G.stones) { if (!s.cv) renderStone(s); const sz = s.cv.width / dpr, h = /** @type {number} */ (s.half); ctx.drawImage(s.cv, s.x - h, s.y - h, sz, sz); }
   drawLight(t); drawParts(t);
   if (cursor) drawCursor(cursor.x, cursor.y, cursor.dx, cursor.dy, cursor.tool);
