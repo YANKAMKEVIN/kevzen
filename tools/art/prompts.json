@@ -1,0 +1,18 @@
+{
+  "style": "Photographie peinte, douce et contemplative, d'un jardin zen japonais (karesansui) : matières naturelles fines, lumière tamisée, palette sable crème, gris pierre, mousse, très calme. Aucun texte, aucun logo, aucune lettre, aucune signature, aucun filigrane.",
+  "fond_detourage": "",
+  "images": [
+    {"fichier": "titre", "taille": "1920x1080", "detourer": false,
+     "prompt": "Affiche d'ouverture de « KevZen » : un jardin de sable ratissé vu de haut en légère plongée, de longues lignes parallèles qui contournent trois pierres moussues en cercles concentriques, quelques pétales de cerisier posés, lumière dorée d'aube et ombres longues. Le tiers haut central reste calme (sable lisse) pour poser le titre."},
+    {"fichier": "sable", "taille": "1024x1024", "detourer": false,
+     "prompt": "Texture de sable très fin vue strictement de dessus, raccordable sans couture sur ses quatre bords, grains crème et beiges minuscules, quelques grains plus sombres, sans aucun relief, sans trace de râteau, éclairage parfaitement uniforme et contraste très faible."},
+    {"fichier": "pierre_1", "taille": "512x512", "detourer": false,
+     "prompt": "Texture de surface de pierre vue strictement de dessus, qui remplit tout le cadre : granit gris clair à grain fin, petites inclusions blanches, quelques fines veines, éclairage uniforme sans ombre."},
+    {"fichier": "pierre_2", "taille": "512x512", "detourer": false,
+     "prompt": "Texture de surface de pierre vue strictement de dessus, qui remplit tout le cadre : basalte gris très sombre presque noir, légèrement poreux, éclairage uniforme sans ombre."},
+    {"fichier": "pierre_3", "taille": "512x512", "detourer": false,
+     "prompt": "Texture de surface de pierre vue strictement de dessus, qui remplit tout le cadre : grès brun chaud et ocre, fines strates, éclairage uniforme sans ombre."},
+    {"fichier": "pierre_4", "taille": "512x512", "detourer": false,
+     "prompt": "Texture de surface de pierre vue strictement de dessus, qui remplit tout le cadre : schiste gris-vert, surface lisse avec de légères taches de lichen pâle, éclairage uniforme sans ombre."}
+  ]
+}
