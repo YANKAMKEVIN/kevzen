@@ -24,7 +24,7 @@ button svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke
 .sw[aria-pressed=true]{background:rgba(255,255,255,.14)}
 .sw[aria-pressed=true] i{border-color:#fff;transform:scale(1.12)}
 .quiet .bar{opacity:.16}.quiet .top{opacity:.3}
-.intro{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(30,18,22,.42),rgba(30,18,22,.18) 70%,rgba(20,12,14,.55));transition:opacity 1.6s ease;z-index:5}
+.intro{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse 55% 50% at 50% 52%,rgba(30,18,22,.58),rgba(30,18,22,.28) 70%,rgba(20,12,14,.55)),url(art/titre.webp) center/cover no-repeat;transition:opacity 1.6s ease;z-index:5}
 .intro h1{font:700 clamp(68px,15vw,156px)/1 "Shippori Mincho",serif;margin:0;text-shadow:0 6px 50px rgba(0,0,0,.35)}
 .intro p{max-width:32ch;margin:14px auto 30px;font-size:17px;text-shadow:0 1px 12px rgba(0,0,0,.6);text-wrap:balance}
 .go{background:rgba(255,250,244,.94);color:#231d19;padding:0 28px;min-height:54px;border-radius:27px;font-size:16px;font-weight:500;box-shadow:0 12px 34px rgba(0,0,0,.28)}
