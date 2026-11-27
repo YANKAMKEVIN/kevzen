@@ -1,0 +1,38 @@
+/* VOICE: calme, tendre, contemplatif, presque silencieux
+   IDEA: un karesansui vu du ciel ; le sable ratissé est la toile et l'instrument
+   PICTURE: le jardin lui-même, bord à bord : sable en relief, pierres moussues, pétales qui dérivent
+   COLOUR and TYPE: la lumière du moment (aube, midi, crépuscule, nuit) ; Shippori Mincho + Zen Kaku Gothic New
+   LAYOUT: jardin plein écran, nom discret en haut, une barre de verre en bas */
+:root{color-scheme:dark;--ink:#f7f1e8;--glass:rgba(24,20,18,.42);--line:rgba(255,255,255,.16);--acc:#f3c6a8}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;overflow:hidden;background:#1b1714;color:var(--ink);font:16px/1.5 "Zen Kaku Gothic New",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#g{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block;cursor:none}
+.top{position:fixed;left:max(14px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));max-width:calc(100vw - 28px);display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;padding:10px 18px 11px;border-radius:22px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);pointer-events:none;transition:opacity .8s}
+.mark{font:700 24px/1 "Shippori Mincho",serif;text-shadow:0 1px 14px rgba(0,0,0,.35)}
+.hint{font-size:14px;opacity:.9;text-shadow:0 1px 8px rgba(0,0,0,.55);transition:opacity .5s}
+.bar{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:7px;border-radius:28px;background:var(--glass);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border:1px solid var(--line);box-shadow:0 14px 44px rgba(0,0,0,.3);transition:opacity .6s;width:max-content;max-width:calc(100vw - 20px)}
+.grp{display:flex;gap:3px;align-items:center}
+.sep{width:1px;height:28px;background:var(--line);margin:0 3px}
+button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:0;border-radius:22px;min-height:44px;min-width:44px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:background .25s,color .25s,transform .2s;white-space:nowrap}
+button:hover{background:rgba(255,255,255,.09)}
+button:active{transform:scale(.95)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[aria-pressed=true]{background:rgba(255,248,240,.92);color:#231d19}
+button svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sw{padding:0;width:44px}
+.sw i{width:24px;height:24px;border-radius:50%;display:block;border:2px solid rgba(255,255,255,.45);box-shadow:inset 0 -5px 9px rgba(0,0,0,.28);transition:transform .25s,border-color .25s}
+.sw[aria-pressed=true]{background:rgba(255,255,255,.14)}
+.sw[aria-pressed=true] i{border-color:#fff;transform:scale(1.12)}
+.quiet .bar{opacity:.16}.quiet .top{opacity:.3}
+.intro{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(30,18,22,.42),rgba(30,18,22,.18) 70%,rgba(20,12,14,.55));transition:opacity 1.6s ease;z-index:5}
+.intro h1{font:700 clamp(68px,15vw,156px)/1 "Shippori Mincho",serif;margin:0;text-shadow:0 6px 50px rgba(0,0,0,.35)}
+.intro p{max-width:32ch;margin:14px auto 30px;font-size:17px;text-shadow:0 1px 12px rgba(0,0,0,.6);text-wrap:balance}
+.go{background:rgba(255,250,244,.94);color:#231d19;padding:0 28px;min-height:54px;border-radius:27px;font-size:16px;font-weight:500;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+.go:hover{background:#fff}
+.intro small{display:block;margin-top:18px;font-size:13px;opacity:.75}
+.intro.gone{opacity:0;pointer-events:none}
+.pre .bar,.pre .top{opacity:0;pointer-events:none}
+@media(max-width:820px){.lbl{display:none}button{padding:0 10px}}
+@media(max-width:600px){.bar{gap:2px 6px;padding:5px;border-radius:24px}.sep{display:none}.grp{gap:0}button{min-width:40px;padding:0 8px}.sw{width:40px}.mark{font-size:20px}.hint{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.intro small.ver{margin-top:8px;font-size:11px;opacity:.5;letter-spacing:.08em}
