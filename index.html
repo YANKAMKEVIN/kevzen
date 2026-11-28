@@ -6,7 +6,6 @@
 <title>KevZen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
 </head>
 <body class="pre">
 <canvas id="g" aria-label="Jardin de sable"></canvas>
@@ -23,20 +22,37 @@
   <span class="sep"></span>
   <div class="grp" role="group" aria-label="Actions">
     <button id="undo" title="Annuler (Z)"><svg viewBox="0 0 24 24"><path d="M9 6 4 11l5 5M4 11h10a5.5 5.5 0 0 1 0 11h-3"/></svg><span class="lbl">Annuler</span></button>
+    <button id="redo" title="Rétablir (Maj+Z)"><svg viewBox="0 0 24 24"><path d="M15 6l5 5-5 5M20 11H10a5.5 5.5 0 0 0 0 11h3"/></svg><span class="lbl">Rétablir</span></button>
     <button id="new" title="Nouveau jardin (N)"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></svg><span class="lbl">Nouveau</span></button>
     <button id="auto" aria-pressed="false" title="Méditer (M)"><svg viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 7.6 5.4"/></svg><span class="lbl">Méditer</span></button>
+    <button id="gal" title="Galerie (G)"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 15l4.5-4 4 3.5 2.5-2 5 4"/><circle cx="15.5" cy="9" r="1.3"/></svg><span class="lbl">Galerie</span></button>
     <button id="snd" aria-pressed="true" title="Son"><svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path id="sndw" d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 6.5c3 3 3 8 0 11"/></svg><span class="lbl">Son</span></button>
   </div>
 </div>
+<dialog id="galerie" aria-labelledby="galTitle">
+  <div class="gal">
+    <header><h2 id="galTitle">Galerie</h2><span class="cnt" id="galCount"></span><button id="galClose" aria-label="Fermer la galerie"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <button class="go" id="galSave">Enregistrer ce jardin</button>
+    <div class="files" role="group" aria-label="Fichier">
+      <button id="galExport" title="Télécharger ce jardin dans un fichier"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg><span>Exporter</span></button>
+      <button id="galImport" title="Ouvrir un jardin depuis un fichier .kevzen.json"><svg viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M5 19h14"/></svg><span>Importer</span></button>
+      <input type="file" id="galFile" accept=".json,application/json" hidden>
+    </div>
+    <p class="msg" id="galMsg" role="status" aria-live="polite"></p>
+    <p class="empty" id="galEmpty">Aucun jardin enregistré pour l'instant. Ils restent dans ce navigateur, sur cet appareil.</p>
+    <ul id="galList"></ul>
+  </div>
+</dialog>
 <div class="intro" id="intro">
   <div>
     <h1>KevZen</h1>
     <p>Un jardin de sable qui respire. Ratissez, posez des pierres, écoutez le jardin vous répondre.</p>
+    <p class="resume" id="resume" hidden>Votre jardin vous attend, tel que vous l'avez laissé.</p>
     <button class="go" id="go">Entrer dans le jardin</button>
     <small>Avec le son, c'est mieux. Casque conseillé.</small>
     <small class="ver" id="ver"></small>
   </div>
 </div>
-<script type="module" src="src/main.js"></script>
+<script type="module" src="/src/main.ts"></script>
 </body>
 </html>

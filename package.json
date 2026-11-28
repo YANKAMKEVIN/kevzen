@@ -1,18 +1,26 @@
 {
   "name": "kevzen",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node tools/serve.mjs",
-    "test": "npm run types && npm run unit && npm run smoke && npm run partie",
+    "dev": "vite --port 8000",
+    "start": "vite --port 8000",
+    "build": "vite build",
+    "preview": "node tools/serve.mjs",
+    "typecheck": "tsc -p .",
     "types": "tsc -p .",
-    "unit": "node --test \"tests/unit/*.test.mjs\"",
-    "smoke": "node tests/smoke.mjs",
-    "partie": "node tests/partie.mjs"
+    "unit": "vitest run",
+    "smoke": "playwright test smoke",
+    "partie": "playwright test --grep-invert fumée",
+    "e2e": "playwright test",
+    "test": "npm run typecheck && npm run unit && npm run build && npm run e2e"
   },
   "devDependencies": {
-    "playwright": "1.63.0",
-    "typescript": "5.8.3"
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.15.30",
+    "typescript": "5.8.3",
+    "vite": "8.4.0",
+    "vitest": "5.1.2"
   }
 }
