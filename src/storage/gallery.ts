@@ -89,6 +89,11 @@ export function nextName(items: GalleryItem[]): string {
   for (let n = items.length + 1; ; n++) if (!used.has(`Jardin ${n}`)) return `Jardin ${n}`;
 }
 
+/** Le stockage répond-il (lecture) ? Un stockage plein répond, un stockage bloqué lève. */
+function usable(store: KVStore): boolean {
+  try { store.getItem(INDEX_KEY); return true; } catch { return false; }
+}
+
 let counter = 0;
 const newId = (now: number): string => (now.toString(36) + (counter++ % 1296).toString(36).padStart(2, '0') + Math.floor(Math.random() * 1296).toString(36).padStart(2, '0')).slice(0, 24);
 
@@ -96,7 +101,7 @@ export interface SaveMeta { id?: string; name?: string; mood: MoodKey; thumb?: s
 
 /** Enregistre un jardin (nouveau, ou par-dessus `meta.id`). */
 export function saveGarden(store: KVStore | null, garden: GardenData, meta: SaveMeta): SaveResult {
-  if (!store) return { ok: false, reason: 'bloque' };
+  if (!store || !usable(store)) return { ok: false, reason: 'bloque' };
   const items = listGardens(store), now = meta.now ?? Date.now();
   const prev = meta.id ? items.find(i => i.id === meta.id) : undefined;
   if (meta.id && !prev) return { ok: false, reason: 'introuvable' };

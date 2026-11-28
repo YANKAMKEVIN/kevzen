@@ -17,6 +17,7 @@
     "test": "npm run typecheck && npm run unit && npm run build && npm run e2e"
   },
   "devDependencies": {
+    "@types/node": "22.15.30",
     "playwright": "1.63.0",
     "typescript": "5.8.3",
     "vite": "8.4.0",

@@ -23,7 +23,7 @@ export interface GardenData {
   /** sable compressé, en base64 */ sand: string;
 }
 
-const r2 = (v: number): number => Math.round(v * 100) / 100;
+const r2 = (v: number): number => Math.round(v * 100) / 100 || 0;
 
 /** Champ de hauteur -> octets signés compressés. */
 export function encodeSand(hm: Float32Array, W: number, H: number): Int8Array {
@@ -141,9 +141,11 @@ export function restoreGarden(g: Garden, raw: unknown): boolean {
   const sx = g.vw / d.vw, sy = g.vh / d.vh;
   g.stones = d.stones.map(s => ({ ...s, x: s.x * sx, y: s.y * sy, pts: s.pts.map(([a, b]) => [a, b] as [number, number]) }));
   g.tines = d.tines;
+  const same = d.W === g.W && d.H === g.H;
   g.hm.set(resample(src, d.W, d.H, g.W, g.H));
   buildMask(g);
-  for (let i = 0; i < g.hm.length; i++) if (g.mask[i]) g.hm[i] = g.ringT[i];
+  // à une autre échelle, les cercles ré-échantillonnés seraient flous : on les retrace nets
+  if (!same) for (let i = 0; i < g.hm.length; i++) if (g.mask[i]) g.hm[i] = g.ringT[i];
   g.grow = []; g.sweep = null; markAll(g);
   g.events.restored();
   return true;
