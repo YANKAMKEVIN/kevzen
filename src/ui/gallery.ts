@@ -11,8 +11,6 @@ import { garden as g, ui, $ } from './state';
 import { setMood, refreshHistory } from './controls';
 
 const dlg = (): HTMLDialogElement => $<HTMLDialogElement>('galerie');
-/** Jardin ouvert depuis la galerie (Enregistrer le met à jour au lieu d'en créer un autre). */
-let current: string | null = null;
 
 const REASONS = {
   bloque: 'Ce navigateur refuse d\'enregistrer (navigation privée ?).',
@@ -37,7 +35,7 @@ function thumbnail(): string | undefined {
 function row(it: GalleryItem): HTMLLIElement {
   const li = document.createElement('li');
   li.dataset.id = it.id;
-  if (it.id === current) li.classList.add('cur');
+  if (it.id === ui.galleryId) li.classList.add('cur');
   const img = document.createElement('div'); img.className = 'th';
   if (it.thumb) img.style.backgroundImage = `url("${it.thumb}")`; else img.style.background = MOODS[it.mood].sw;
   const meta = document.createElement('div'); meta.className = 'meta';
@@ -49,7 +47,7 @@ function row(it: GalleryItem): HTMLLIElement {
   const del = document.createElement('button'); del.className = 'del'; del.textContent = 'Effacer'; del.setAttribute('aria-label', `Effacer ${it.name}`);
   del.onclick = () => {
     if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Sûr ?'; return; }
-    removeGarden(browserStore(), it.id); if (current === it.id) current = null; say(`« ${it.name} » effacé.`); render();
+    removeGarden(browserStore(), it.id); if (ui.galleryId === it.id) ui.galleryId = null; say(`« ${it.name} » effacé.`); render();
   };
   const act = document.createElement('div'); act.className = 'act'; act.append(open, del);
   li.append(img, meta, act);
@@ -61,14 +59,14 @@ function render(): void {
   list.replaceChildren(...items.map(row));
   $('galEmpty').hidden = items.length > 0;
   $('galCount').textContent = `${items.length} / ${MAX_GARDENS}`;
-  $('galSave').textContent = current && items.some(i => i.id === current) ? 'Mettre à jour ce jardin' : 'Enregistrer ce jardin';
+  $('galSave').textContent = ui.galleryId && items.some(i => i.id === ui.galleryId) ? 'Mettre à jour ce jardin' : 'Enregistrer ce jardin';
 }
 
 function saveCurrent(): void {
   const st = browserStore();
-  const exists = current !== null && listGardens(st).some(i => i.id === current);
-  const r = saveGarden(st, serializeGarden(g), { id: exists ? current ?? undefined : undefined, mood: save.mood, thumb: thumbnail() });
-  if (r.ok) { current = r.item.id; say(`« ${r.item.name} » enregistré.`); pluck(MOODS[save.mood].root, .1, 0); }
+  const exists = ui.galleryId !== null && listGardens(st).some(i => i.id === ui.galleryId);
+  const r = saveGarden(st, serializeGarden(g), { id: exists ? ui.galleryId ?? undefined : undefined, mood: save.mood, thumb: thumbnail() });
+  if (r.ok) { ui.galleryId = r.item.id; say(`« ${r.item.name} » enregistré.`); pluck(MOODS[save.mood].root, .1, 0); }
   else say(REASONS[r.reason]);
   render();
 }
@@ -76,7 +74,7 @@ function saveCurrent(): void {
 function openGarden(it: GalleryItem): void {
   const data = loadGarden(browserStore(), it.id);
   if (!data || !restoreGarden(g, data)) { say(`« ${it.name} » est abîmé : il a été mis de côté.`); render(); return; }
-  current = it.id;
+  ui.galleryId = it.id;
   if (it.mood !== save.mood) setMood(it.mood);
   refreshHistory(); closeGallery();
   bell(MOODS[save.mood].root / 2, g.vw / 2);

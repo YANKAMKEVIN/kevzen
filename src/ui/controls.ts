@@ -49,7 +49,7 @@ export function setSound(on: boolean): void {
 
 const doUndo = (): void => { undo(g); refreshHistory(); };
 const doRedo = (): void => { redo(g); refreshHistory(); };
-const doNew = (): void => { ensureAudio(); newGarden(g); refreshHistory(); };
+const doNew = (): void => { ensureAudio(); newGarden(g); ui.galleryId = null; refreshHistory(); };
 
 /** Le jardin parle au son et au rendu. */
 function bindEvents(): void {

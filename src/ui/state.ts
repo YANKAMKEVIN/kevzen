@@ -13,6 +13,7 @@ export const ui = {
   /** indice dans TINES */ tni: 1,
   lastAct: 0,
   /** la galerie est ouverte (les gestes et raccourcis du jardin sont suspendus) */ panel: false,
+  /** jardin de la galerie affiché (Enregistrer le met à jour) ; oublié au Nouveau jardin */ galleryId: null as string | null,
 };
 
 export const $ = <T extends HTMLElement = HTMLElement>(id: string): T => document.getElementById(id) as T;
