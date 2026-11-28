@@ -67,15 +67,46 @@ function voice(ac: AudioContext, n: AudioNode, pan: number): AudioNode {
   x.connect(out); x.connect(revIn); return x;
 }
 
-/** Note de koto. */
-export function pluck(f: number, vel: number, pan: number): void {
-  if (!A || !save.sound) return; const ac = A, t = ac.currentTime;
+/** Dernier son d'interface vraiment joué (lu par les tests de bout en bout). */
+export const heard = { last: '', count: 0 };
+const mark = (name: string): void => { heard.last = name; heard.count++; };
+
+/** Note de koto (`delay` en secondes). */
+export function pluck(f: number, vel: number, pan: number, delay = 0): void {
+  if (!A || !save.sound) return; const ac = A, t = ac.currentTime + delay;
   const o = ac.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(f * 1.012, t); o.frequency.exponentialRampToValueAtTime(f, t + .06);
   const o2 = ac.createOscillator(); o2.frequency.value = f * 2.003; const g2 = ac.createGain(); g2.gain.value = .22;
   const fl = ac.createBiquadFilter(); fl.type = 'lowpass'; fl.Q.value = 1.5; fl.frequency.setValueAtTime(5200, t); fl.frequency.exponentialRampToValueAtTime(650, t + .55);
   const g = ac.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vel, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + 3);
   o.connect(fl); o2.connect(g2); g2.connect(fl); fl.connect(g); voice(ac, g, pan).connect(echoIn);
   o.start(t); o2.start(t); o.stop(t + 3.1); o2.stop(t + 3.1);
+}
+
+/** Degré `k` de la gamme de la lumière en cours, à partir de la fondamentale. */
+const degree = (k: number): number => { const sc = mood().scale; return mood().root * Math.pow(2, Math.floor(k / sc.length) + sc[k % sc.length] / 12); };
+
+/** Annuler : une note de koto (le son d'origine). */
+export function undoSound(): void {
+  if (!A || !save.sound) return; pluck(mood().root, .08, 0); mark('annuler');
+}
+
+/** Rétablir : deux notes de koto qui montent (le geste revient), plus légères qu'Annuler. */
+export function redoSound(): void {
+  if (!A || !save.sound) return; pluck(degree(0), .055, -.15); pluck(degree(2), .06, .15, .085); mark('retablir');
+}
+
+/** Enregistrer : un petit carillon à vent, trois tintements aigus dans la gamme, très doux. */
+export function saveSound(): void {
+  if (!A || !save.sound) return; const ac = A, t0 = ac.currentTime;
+  [4, 2, 5].forEach((k, i) => {
+    const t = t0 + i * .11, f = degree(k) * 2, pan = (i - 1) * .35;
+    for (const [r, a, d] of [[1, 1, 2.4], [2.76, .25, 1.1]]) {
+      const o = ac.createOscillator(); o.frequency.value = f * r; const g = ac.createGain();
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.035 * a, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+      o.connect(g); voice(ac, g, pan); o.start(t); o.stop(t + d + .1);
+    }
+  });
+  mark('enregistrer');
 }
 
 /** Cloche (pierre posée). */

@@ -83,7 +83,7 @@ describe('jardin sérialisé', () => {
     expect(h.stones).toHaveLength(g.stones.length);
     h.stones.forEach((s, i) => { expect(s.x).toBeCloseTo(g.stones[i].x, 1); expect(s.kind).toBe(g.stones[i].kind); expect(s.pts).toHaveLength(16); });
     expect(maxErr(h.hm, g.hm)).toBeLessThanOrEqual(.5 / QUANT + 1e-6);
-    expect(log.restored).toHaveLength(1);
+    expect(log.restored).toEqual([['open']]);
     expect(h.dirty).toEqual([0, 0, h.W - 1, h.H - 1]);
   });
 

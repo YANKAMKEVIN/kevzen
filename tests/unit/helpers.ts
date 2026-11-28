@@ -37,7 +37,7 @@ export function record(g: Garden): Record<keyof GardenEvents, unknown[][]> {
   const log: Record<keyof GardenEvents, unknown[][]> = { stonePlaced: [], stoneRemoved: [], restored: [], newGarden: [], note: [] };
   g.events = {
     stonePlaced: (...a) => { log.stonePlaced.push(a); }, stoneRemoved: (...a) => { log.stoneRemoved.push(a); },
-    restored: () => { log.restored.push([]); }, newGarden: () => { log.newGarden.push([]); }, note: (...a) => { log.note.push(a); },
+    restored: k => { log.restored.push([k]); }, newGarden: () => { log.newGarden.push([]); }, note: (...a) => { log.note.push(a); },
   };
   return log;
 }

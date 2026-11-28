@@ -13,7 +13,18 @@ describe('annuler / rétablir', () => {
     expect(undo(g)).toBe(true); expect(g.stones).toHaveLength(0);
     expect(undo(g)).toBe(true); expect(diff(h0, g.hm)).toBe(0);
     expect(undo(g)).toBe(false);
-    expect(log.restored).toHaveLength(2);
+    expect(log.restored).toEqual([['undo'], ['undo']]);
+  });
+
+  test('annuler et rétablir s\'annoncent différemment (le son n\'est pas le même)', () => {
+    const g = freshGarden();
+    const log = record(g);
+    pushUndo(g); rakeSeg(g, 10, 10, 300, 200);
+    undo(g); redo(g); undo(g);
+    expect(log.restored).toEqual([['undo'], ['redo'], ['undo']]);
+    expect(redo(g)).toBe(true); expect(redo(g)).toBe(false);
+    expect(log.restored.at(-1)).toEqual(['redo']);
+    expect(log.restored).toHaveLength(4);
   });
 
   test('rétablir refait les gestes annulés, dans l\'ordre', () => {

@@ -147,6 +147,6 @@ export function restoreGarden(g: Garden, raw: unknown): boolean {
   // à une autre échelle, les cercles ré-échantillonnés seraient flous : on les retrace nets
   if (!same) for (let i = 0; i < g.hm.length; i++) if (g.mask[i]) g.hm[i] = g.ringT[i];
   g.grow = []; g.sweep = null; markAll(g);
-  g.events.restored();
+  g.events.restored('open');
   return true;
 }

@@ -9,6 +9,9 @@ export interface Stone {
   pts: [number, number][];
 }
 
+/** Ce qui a remplacé tout l'état du jardin (le son diffère). */
+export type RestoreKind = 'undo' | 'redo' | 'open';
+
 export interface Snapshot { h: Float32Array; st: Stone[] }
 
 /** Événements vers le rendu et le son. */
@@ -16,7 +19,7 @@ export interface GardenEvents {
   stonePlaced(s: Stone, silent: boolean): void;
   stoneRemoved(s: Stone): void;
   /** annuler / rétablir / ouvrir un jardin : tout l'état a changé */
-  restored(): void;
+  restored(kind: RestoreKind): void;
   newGarden(): void;
   /** le jardinier automatique joue une note */
   note(x: number, y: number): void;
