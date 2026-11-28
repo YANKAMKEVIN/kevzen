@@ -35,7 +35,7 @@ jobs:
           retention-days: 3
 
   navigateur:
-    name: Fumée (ordinateur, iPhone SE, Pixel 7) et partie complète
+    name: Bout en bout Playwright (fumée, partie, galerie, sauvegarde, fichier, mobile)
     needs: verif
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -51,12 +51,13 @@ jobs:
         with:
           name: dist
           path: dist/
-      - run: npm run smoke
-      - run: npm run partie
-      - name: Captures
+      - run: npx playwright test --trace off
+      - name: Captures et rapport
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: captures
-          path: test-results/
+          path: |
+            test-results/
+            playwright-report/
           retention-days: 7
