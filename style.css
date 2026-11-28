@@ -62,3 +62,8 @@ dialog#galerie[open]{animation:galIn .45s ease}
 #galList .del[data-sure="1"]{background:rgba(220,110,90,.35)}
 #galList .act{display:flex;gap:4px}
 @media(max-width:600px){#galList li{grid-template-columns:56px 1fr}#galList .th{width:56px;height:40px}#galList .act{grid-column:1/-1;justify-content:flex-end}}
+.intro p.resume{margin:-14px auto 24px;font-size:15px;color:var(--acc)}
+.intro p.resume[hidden]{display:none}
+.gal .files{display:flex;gap:8px}
+.gal .files button{flex:1;background:rgba(255,248,240,.1);border:1px solid var(--line)}
+.gal .files button:hover{background:rgba(255,248,240,.18)}

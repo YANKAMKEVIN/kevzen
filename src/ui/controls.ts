@@ -4,9 +4,10 @@ import { markAll } from '../core/garden';
 import { undo, redo, canUndo, canRedo } from '../core/history';
 import { newGarden } from '../core/compose';
 import { save, persist } from '../storage/settings';
-import { ensureAudio, tune, setVolume, pluck, bell, tok, note, panOf } from '../audio';
+import { ensureAudio, tune, setVolume, pluck, bell, tok, note, panOf, undoSound, redoSound } from '../audio';
 import { clearStoneCache, resetParts } from '../render';
 import { garden as g, ui, $, type Tool } from './state';
+import { scheduleAutosave } from './autosave';
 
 const root = (): number => MOODS[save.mood].root;
 
@@ -47,16 +48,16 @@ export function setSound(on: boolean): void {
   setVolume(on); persist();
 }
 
-const doUndo = (): void => { undo(g); refreshHistory(); };
-const doRedo = (): void => { redo(g); refreshHistory(); };
-const doNew = (): void => { ensureAudio(); newGarden(g); ui.galleryId = null; refreshHistory(); };
+const doUndo = (): void => { ensureAudio(); if (undo(g)) scheduleAutosave(); refreshHistory(); };
+const doRedo = (): void => { ensureAudio(); if (redo(g)) scheduleAutosave(); refreshHistory(); };
+const doNew = (): void => { ensureAudio(); newGarden(g); ui.galleryId = null; ui.importedName = null; refreshHistory(); scheduleAutosave(); };
 
 /** Le jardin parle au son et au rendu. */
 function bindEvents(): void {
   g.events = {
     stonePlaced: (s, silent) => { if (!silent) bell(root() / 2 * (s.r > 34 ? .75 : 1), s.x); },
     stoneRemoved: s => pluck(root() / 2, .12, panOf(s.x)),
-    restored: () => pluck(root(), .08, 0),
+    restored: k => { if (k === 'undo') undoSound(); else if (k === 'redo') redoSound(); else pluck(root(), .08, 0); },
     newGarden: () => tok(.6),
     note: (x, y) => note(x, y, .11),
   };

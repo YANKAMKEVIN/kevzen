@@ -4,11 +4,13 @@ import { serializeGarden, restoreGarden } from '../core/serialize';
 import { type GalleryItem, listGardens, saveGarden, loadGarden, removeGarden, renameGarden, MAX_GARDENS } from '../storage/gallery';
 import { browserStore } from '../storage/store';
 import { save } from '../storage/settings';
-import { pluck, bell } from '../audio';
+import { bell, saveSound } from '../audio';
 import { cv } from '../render';
 import { cancelGesture } from './gestures';
 import { garden as g, ui, $ } from './state';
 import { setMood, refreshHistory } from './controls';
+import { scheduleAutosave } from './autosave';
+import { bindTransfer } from './transfer';
 
 const dlg = (): HTMLDialogElement => $<HTMLDialogElement>('galerie');
 
@@ -65,8 +67,8 @@ function render(): void {
 function saveCurrent(): void {
   const st = browserStore();
   const exists = ui.galleryId !== null && listGardens(st).some(i => i.id === ui.galleryId);
-  const r = saveGarden(st, serializeGarden(g), { id: exists ? ui.galleryId ?? undefined : undefined, mood: save.mood, thumb: thumbnail() });
-  if (r.ok) { ui.galleryId = r.item.id; say(`« ${r.item.name} » enregistré.`); pluck(MOODS[save.mood].root, .1, 0); }
+  const r = saveGarden(st, serializeGarden(g), { id: exists ? ui.galleryId ?? undefined : undefined, name: exists ? undefined : ui.importedName ?? undefined, mood: save.mood, thumb: thumbnail() });
+  if (r.ok) { ui.galleryId = r.item.id; ui.importedName = null; scheduleAutosave(); say(`« ${r.item.name} » enregistré.`); saveSound(); }
   else say(REASONS[r.reason]);
   render();
 }
@@ -74,7 +76,7 @@ function saveCurrent(): void {
 function openGarden(it: GalleryItem): void {
   const data = loadGarden(browserStore(), it.id);
   if (!data || !restoreGarden(g, data)) { say(`« ${it.name} » est abîmé : il a été mis de côté.`); render(); return; }
-  ui.galleryId = it.id;
+  ui.galleryId = it.id; ui.importedName = null; scheduleAutosave();
   if (it.mood !== save.mood) setMood(it.mood);
   refreshHistory(); closeGallery();
   bell(MOODS[save.mood].root / 2, g.vw / 2);
@@ -96,6 +98,7 @@ export function closeGallery(): void {
 export function bindGallery(): void {
   $('galSave').onclick = saveCurrent;
   $('galClose').onclick = closeGallery;
+  bindTransfer(say, closeGallery);
   dlg().addEventListener('close', () => { ui.panel = false; });
   dlg().addEventListener('click', e => { if (e.target === dlg()) closeGallery(); });
 }

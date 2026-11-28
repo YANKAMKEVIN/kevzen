@@ -32,7 +32,7 @@ export function bindGestures(onChange: () => void): void {
     down = e.pointerId; pushUndo(g); pen.x = ptr.x; pen.y = ptr.y; pen.on = true; travel = 0; document.body.classList.add('quiet'); onChange();
   });
   cv.addEventListener('pointermove', e => { if (down !== null && e.pointerId !== down) return; ptr.x = e.clientX; ptr.y = e.clientY; ptr.in = true; ptr.mouse = e.pointerType === 'mouse'; ui.lastAct = performance.now(); });
-  const up = (e: PointerEvent): void => { if (e.pointerId === down) cancelGesture(); };
+  const up = (e: PointerEvent): void => { if (e.pointerId === down) { cancelGesture(); onChange(); } };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') ptr.in = false; });
 }
