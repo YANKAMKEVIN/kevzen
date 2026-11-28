@@ -4,21 +4,16 @@
 // -> ancien format repris -> sauvegarde abîmée mise de côté. Puis le même jardin au doigt sur iPhone SE.
 // Lancer : npm run partie
 import { chromium, devices } from 'playwright';
-import { spawn } from 'node:child_process';
-import { createServer, connect } from 'node:net';
+import { startServer } from './server.mjs';
 import { mkdirSync } from 'node:fs';
 
-const PORT = await new Promise(res => { const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+const server = await startServer();
+const PORT = server.port;
 const URL = `http://127.0.0.1:${PORT}/index.html?graine=5`;
 const OUT = process.env.SMOKE_SHOTS || 'test-results';
 const KEY = 'kevzen.sauvegarde';
 mkdirSync(OUT, { recursive: true });
-const server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', '127.0.0.1'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-for (let i = 0; i < 100; i++) {
-  const ok = await new Promise(res => { const c = connect(PORT, '127.0.0.1', () => { c.end(); res(true); }); c.on('error', () => res(false)); });
-  if (ok) break; await sleep(100);
-}
 const fails = [];
 const check = (ok, msg) => { console.log(`${ok ? 'OK   ' : 'ÉCHEC'} ${msg}`); if (!ok) fails.push(msg); };
 
@@ -189,7 +184,7 @@ try {
   await ctx.close();
 } finally {
   await browser.close();
-  server.kill();
+  server.stop();
 }
 if (fails.length) { console.error(`\n${fails.length} échec(s)`); process.exit(1); }
 console.log('\nPartie complète : tout est bon.');

@@ -1,15 +1,15 @@
 // Test de fumée : charge le jeu sur ordinateur et téléphones, le lance, joue ~20 s
 // avec de vraies entrées et échoue sur toute erreur console, débordement ou bouton
 // inaccessible. Réglages propres au jeu : tests/smoke.config.mjs.
-// Lancer : npm test   (serveur local démarré automatiquement)
+// Lancer : npm run build && npm run smoke   (serveur local démarré automatiquement)
 import { chromium, devices } from 'playwright';
-import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
-import { createServer } from 'node:net';
+import { startServer } from './server.mjs';
 import cfg from './smoke.config.mjs';
 
-// port libre choisi par le système (plusieurs jeux peuvent tourner en même temps)
-const PORT = await new Promise(res => { const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+// serveur sur le jeu construit, port libre choisi par le système
+const server = await startServer();
+const PORT = server.port;
 const BASE = `http://127.0.0.1:${PORT}/${cfg.page || 'index.html'}`;
 const SHOTS = process.env.SMOKE_SHOTS || 'test-results';
 const PLAY_MS = Number(process.env.SMOKE_PLAY_MS || cfg.playMs || 20000);
@@ -20,22 +20,11 @@ const PROFILES = [
 ];
 const only = process.env.SMOKE_ONLY;
 
-const server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', '127.0.0.1'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const failures = [];
 const fail = (p, msg) => { failures.push(`[${p}] ${msg}`); console.log(`  ÉCHEC ${msg}`); };
 const ignored = t => (cfg.ignoreErrors || []).some(re => re.test(t));
 
-// attend que le serveur local accepte les connexions (simple essai TCP)
-async function waitServer() {
-  const { connect } = await import('node:net');
-  for (let i = 0; i < 100; i++) {
-    const ok = await new Promise(res => { const c = connect(PORT, '127.0.0.1', () => { c.end(); res(true); }); c.on('error', () => res(false)); });
-    if (ok) return;
-    await sleep(100);
-  }
-  throw new Error('serveur local injoignable');
-}
 
 // Chaque bouton visible doit pouvoir être amené à l'écran (défilement compris) et y tenir.
 async function checkButtons(page, p, step) {
@@ -97,7 +86,6 @@ async function fps(page, ms = 2000) {
 }
 
 try {
-  await waitServer();
   mkdirSync(SHOTS, { recursive: true });
   const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
   for (const prof of PROFILES) {
@@ -140,7 +128,7 @@ try {
 } catch (e) {
   failures.push(`erreur du test : ${e.stack || e}`);
 } finally {
-  server.kill();
+  server.stop();
 }
 if (failures.length) { console.log(`\n${failures.length} échec(s) :\n` + failures.join('\n')); process.exit(1); }
 console.log('\nTest de fumée réussi.');
